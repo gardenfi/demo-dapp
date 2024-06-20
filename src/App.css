@@ -1,0 +1,155 @@
+:root {
+  --primary-color: #09090b;
+  --secondary-color: #fafafa;
+  --primary-radius: 10px;
+  --secondary-radius: 5px;
+  --placeholder-color: #9a9a9d;
+  --border-color: #27272a;
+  --font-size: 14px;
+
+  font-family: "Inter", sans-serif;
+  color: #fafafa;
+}
+
+/* ------------ Button Start ------------ */
+
+button {
+  font-family: inherit;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  border-radius: var(--secondary-radius);
+  cursor: pointer;
+}
+
+.button-black {
+  font-family: inherit;
+  font-size: 13.25px;
+  color: var(--secondary-color);
+  background-color: var(--primary-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--secondary-radius);
+  padding: 10px 20px;
+  padding: 10px 20px;
+  font-size: 13.25px;
+}
+
+.button-white {
+  background: var(--secondary-color);
+  border: none;
+  font-size: 14px;
+  padding: 10px 20px;
+}
+
+.input-component button {
+  font-size: var(--font-size);
+  background-color: var(--border-color);
+  padding: 6px 6px;
+  color: var(--secondary-color);
+  width: 80px;
+  cursor: default;
+}
+
+/* ------------ Buttons End ------------ */
+
+/* ------------ Input Start ------------ */
+
+input {
+  width: 100%;
+  height: 35px;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  font-family: inherit;
+  padding: 9px 11px;
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+  border-radius: var(--secondary-radius);
+}
+
+/* ------------ Input End ------------ */
+
+/* ------------ Label Start ------------ */
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ------------ Label End ------------ */
+
+/* ------------ Swap Component Start ------------ */
+
+#container {
+  width: 100vw;
+  padding: 0px 30px 0px 80px;
+  /* border: 1px solid var(--border-color); */
+}
+
+.swap-component {
+  background-color: var(--primary-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--primary-radius);
+  width: 30%;
+  padding: 26px 24px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.swap-component-top-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.swap-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.connect-metamask:hover {
+  background-color: #27272a;
+}
+
+hr {
+  width: 100%;
+  color: var(--border-color);
+  margin-top: 1.125rem;
+  margin-bottom: 1.125rem;
+}
+
+.swap-component-middle-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.625rem;
+  width: 100%;
+}
+
+.swap-component-middle-section > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-component {
+  display: flex;
+  gap: 11px;
+}
+
+.swap-component-bottom-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.swap-component-bottom-section div {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--font-size);
+  font-weight: 500;
+  gap: 8px;
+}
+
+/* ------------ Swap Component End ------------ */
+
+
