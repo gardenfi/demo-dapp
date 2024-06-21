@@ -10,8 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@catalogfi/wallets": "^0.2.43",
+    "@gardenfi/core": "^0.1.5",
+    "@gardenfi/orderbook": "^0.1.4",
+    "buffer": "^6.0.3",
+    "ethers": "6.8.0",
+    "process": "^0.11.10",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -23,6 +30,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "vite-plugin-wasm": "^3.3.0"
   }
 }

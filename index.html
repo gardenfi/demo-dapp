@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,5 +9,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>window.global = window;</script>
+    <script type="module">
+      import { Buffer } from "buffer/"; // <-- no typo here ("/")
+      import process from "process";
+
+      window.Buffer = Buffer;
+      window.process = process;
+    </script>
   </body>
 </html>
