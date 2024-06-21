@@ -1,11 +1,22 @@
+import { useEffect } from "react";
 import { create } from "zustand";
 import { EVMWallet } from "@catalogfi/wallets";
+// import {BitcoinProvider, BitcoinNetwork} from "@catalogfi/wallets";
 import { BrowserProvider } from "ethers";
+import { type GardenJS } from "@gardenfi/core";
+
+import {
+  Orderbook,
+  Chains,
+  Assets,
+  Actions,
+  parseStatus,
+} from "@gardenfi/orderbook";
 
 type EvmWalletState = {
   metaMaskIsConnected: boolean;
-  EvmProvider: BrowserProvider | null;
-  EvmWallet: EVMWallet | null;
+  evmProvider: BrowserProvider | null;
+  evmWallet: EVMWallet | null;
 };
 
 type EvmWalletAction = {
@@ -14,15 +25,15 @@ type EvmWalletAction = {
 
 const useMetaMaskStore = create<EvmWalletState & EvmWalletAction>((set) => ({
   metaMaskIsConnected: false,
-  EvmProvider: null,
-  EvmWallet: null,
+  evmProvider: null,
+  evmWallet: null,
   connectMetaMask: async () => {
     if (window.ethereum !== null) {
       const provider = new BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       set(() => ({
-        EvmProvider: provider,
-        EvmWallet: new EVMWallet(signer),
+        evmProvider: provider,
+        evmWallet: new EVMWallet(signer),
         metaMaskIsConnected: true,
       }));
     } else {
@@ -30,6 +41,27 @@ const useMetaMaskStore = create<EvmWalletState & EvmWalletAction>((set) => ({
     }
   },
 }));
+
+// type BitcoinWalletState = {
+//   BitcoinProvider: BitcoinProvider | null;
+//   BitcoinWallet: EVMWallet | null;
+// };
+
+// type BitcoinWalletAction = {
+//   updateWallet: () => Promise<void>;
+// };
+
+// const useBitcoinStore = create<BitcoinWalletState & BitcoinWalletAction>(
+//   (set) => ({
+//     BitcoinProvider: new BitcoinProvider(BitcoinNetwork.Testnet),
+//     BitcoinWallet: null,
+//     updateWallet: async () => {
+//       set(() => ({
+//         BitcoinWallet: new EVMWallet(signer),
+//       }));
+//     },
+//   })
+// );
 
 type AmountState = {
   wbtcAmount: string | null;
@@ -77,4 +109,38 @@ const useAddressStore = create<AddressState & AddressAction>((set) => ({
   },
 }));
 
-export { useMetaMaskStore, useAmountStore, useAddressStore };
+type GardenStore = {
+  garden: GardenJS | null;
+  setGarden: (garden: GardenJS) => void;
+};
+
+const gardenStore = create<GardenStore>((set) => ({
+  garden: null,
+  setGarden: (garden: GardenJS) => {
+    set(() => ({
+      garden,
+    }));
+  },
+}));
+
+const useGardenStore = () => gardenStore((state) => state.garden);
+
+const useGardenSetup = () => {
+  const evmProvider = useMetaMaskStore((state) => state.evmProvider);
+  const setGarden = gardenStore((state) => state.setGarden);
+  useEffect(() => {
+    async () => {
+      const orderbook = await Orderbook.init({
+        signer: ,
+      });
+    };
+  }, [evmProvider]);
+};
+
+export {
+  useMetaMaskStore,
+  useAmountStore,
+  useAddressStore,
+  useGardenStore,
+  useGardenSetup,
+};

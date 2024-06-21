@@ -1,4 +1,4 @@
-import { useMetaMaskStore, useAmountStore, useAddressStore } from "./store";
+import { useMetaMaskStore, useAmountStore, useAddressStore, useGardenSetup } from "./store";
 
 const SwapComponent: React.FC = () => {
   return (
@@ -63,6 +63,8 @@ const SwapComponentMiddle: React.FC = () => {
 
 const SwapComponentBottom: React.FC = () => {
   const { btcAddress, updateBtcAddress } = useAddressStore();
+  const handleSwap = async () => {
+  };
   return (
     <div className="swap-component-bottom-section">
       <div>
@@ -76,7 +78,9 @@ const SwapComponentBottom: React.FC = () => {
           />
         </div>
       </div>
-      <button className="button-white">Swap</button>
+      <button className="button-white" onClick={handleSwap}>
+        Swap
+      </button>
     </div>
   );
 };

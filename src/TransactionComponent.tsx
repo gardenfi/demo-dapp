@@ -7,6 +7,18 @@ function TransactionsComponent() {
         btcAmount={0.000991}
         status="initiate"
       />
+      <OrderComponent
+        orderId={3456}
+        wbtcAmount={0.001}
+        btcAmount={0.000991}
+        status="initiate"
+      />
+      <OrderComponent
+        orderId={3456}
+        wbtcAmount={0.001}
+        btcAmount={0.000991}
+        status="initiate"
+      />
     </div>
   );
 }
