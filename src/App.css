@@ -105,7 +105,7 @@ label {
 .swap-component-top-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .swap-title {
@@ -113,7 +113,7 @@ label {
   font-weight: 600;
 }
 
-.connect-metamask:hover {
+.button-black:hover {
   background-color: #27272a;
 }
 
@@ -181,47 +181,70 @@ hr {
   background-color: var(--primary-color);
   border: 1px solid var(--border-color);
   border-radius: var(--primary-radius);
-  padding: 17px 20px;
+  /* padding: 17px 20px 0px 20px; */
+  padding-top: 17px;
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.order-id{
-    font-size: 16px;
-}
-
-.order-id span{
-    font-weight: 600;
+.order-id {
+  padding-left: 1rem;
+  /* border: 1px solid red; */
+  font-size: 16px;
 }
 
 .amount-and-status {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  /* border: 1px solid red; */
 }
 
-.amount-and-status div{
+.amount-and-status * {
+    /* border: 1px solid red; */
+    text-align: center;
+}
+
+
+.amount-label, .status-label {
+    padding: 5px;
+    font-size: var(--font-size);
+    color: var(--border-color); 
+}
+
+.amount-label {
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.status-label{
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.amount {
+    font-size: 20px;
+    align-self: stretch;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    border-right: 1px solid var(--border-color);
 }
 
-.amount-and-status .amount {
-    font-size: 1.5rem;
-    font-weight: 500;
+.status {
+    font-size: 14px;
+    padding: 9px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.amount-and-status .amount-label {
-    font-size: 1rem;
-    color: var(--border-color);
-    font-weight: 600;
+.status button {
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
 /* ------------ Transaction Component End ------------ */
-
-
-
