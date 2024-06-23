@@ -1,139 +1,161 @@
 import { useState } from "react";
-import { useMetaMaskStore, useGardenStore, useGardenSetup } from "./store";
+import { useMetaMaskStore, useGarden, useGardenSetup } from "./store";
 import { Assets } from "@gardenfi/orderbook";
+
+type AmountState = {
+  btcAmount: string | null;
+  wbtcAmount: string | null;
+};
 
 const SwapComponent: React.FC = () => {
   useGardenSetup();
-  const [amount, setAmount] = useState<{
-    btcAmount: string | null;
-    wbtcAmount: string | null;
-  }>({ btcAmount: null, wbtcAmount: null });
-
-  const { wbtcAmount, btcAmount } = amount;
+  const [amount, setAmount] = useState<AmountState>({
+    btcAmount: null,
+    wbtcAmount: null,
+  });
 
   const changeAmount = (of: "WBTC" | "BTC", value: string) => {
     if (of === "WBTC") {
-      if (Number(value) <= 0) {
-        setAmount(() => ({
-          wbtcAmount: value,
-          btcAmount: null,
-        }));
-        return;
-      }
-
-      const btcAmount = (1 - 0.3 / 100) * Number(value);
-      setAmount(() => ({
-        wbtcAmount: value,
-        btcAmount: btcAmount.toString(),
-      }));
+      handleWBTCChange(value);
     }
+  };
+  const handleWBTCChange = (value: string) => {
+    let newAmount: AmountState = { wbtcAmount: value, btcAmount: null };
+    if (Number(value) > 0) {
+      const btcAmount = (1 - 0.3 / 100) * Number(value);
+      newAmount.btcAmount = btcAmount.toString();
+    }
+    setAmount(newAmount);
   };
 
   return (
     <div className="swap-component">
-      <SwapComponentTop />
+      <WalletConnectionComponent />
       <hr></hr>
-      <SwapComponentMiddle
-        amount={amount}
-        setAmount={setAmount}
-        wbtcAmount={wbtcAmount}
-        btcAmount={btcAmount}
-        changeAmount={changeAmount}
-      />
+      <TransactionAmountComponent amount={amount} changeAmount={changeAmount} />
       <hr></hr>
-      <SwapComponentBottom
-        wbtcAmount={wbtcAmount}
-        btcAmount={btcAmount}
-        changeAmount={changeAmount}
-      />
+      <SwapAndAddressComponent amount={amount} changeAmount={changeAmount} />
     </div>
   );
 };
 
-const SwapComponentTop: React.FC = () => {
+const WalletConnectionComponent: React.FC = () => {
   const { connectMetaMask, metaMaskIsConnected } = useMetaMaskStore();
+
   return (
     <div className="swap-component-top-section">
       <span className="swap-title">Swap</span>
-      <button
-        className={`connect-metamask button-${
-          metaMaskIsConnected ? "black" : "white"
-        }`}
+      <MetaMaskButton
+        isConnected={metaMaskIsConnected}
         onClick={connectMetaMask}
-      >
-        {metaMaskIsConnected ? "Connected" : "Connect Metamask"}
-      </button>
+      />
     </div>
   );
 };
 
-const SwapComponentMiddle: React.FC<{
-  amount: { wbtcAmount: string | null; btcAmount: string | null };
+type MetaMaskButtonProps = {
+  isConnected: boolean;
+  onClick: () => void;
+};
+
+const MetaMaskButton: React.FC<MetaMaskButtonProps> = ({
+  isConnected,
+  onClick,
+}) => {
+  const buttonClass = `connect-metamask button-${
+    isConnected ? "black" : "white"
+  }`;
+  const buttonText = isConnected ? "Connected" : "Connect Metamask";
+
+  return (
+    <button className={buttonClass} onClick={onClick}>
+      {buttonText}
+    </button>
+  );
+};
+
+type TransactionAmountComponentProps = {
+  amount: AmountState;
   changeAmount: (of: "WBTC" | "BTC", value: string) => void;
-  wbtcAmount: string | null;
-  btcAmount: string | null;
-  setAmount: React.Dispatch<
-    React.SetStateAction<{
-      btcAmount: string | null;
-      wbtcAmount: string | null;
-    }>
-  >;
-}> = ({ wbtcAmount, btcAmount, changeAmount }) => {
+};
+
+const TransactionAmountComponent: React.FC<TransactionAmountComponentProps> = ({
+  amount,
+  changeAmount,
+}) => {
+  const { wbtcAmount, btcAmount } = amount;
+
   return (
     <div className="swap-component-middle-section">
-      <div>
-        <label htmlFor="send-input">Send WBTC</label>
-        <div className="input-component">
-          <input
-            id="send-input"
-            placeholder="0"
-            value={wbtcAmount ? wbtcAmount : ""}
-            type="number"
-            onChange={(e) => changeAmount("WBTC", e.target.value)}
-          />
-          <button>WBTC</button>
-        </div>
-      </div>
-      <div>
-        <label htmlFor="receive-input">Receive BTC</label>
-        <div className="input-component">
-          <input
-            id="receive-input"
-            placeholder="0"
-            value={btcAmount ? btcAmount : ""}
-            type="number"
-            readOnly={true}
-          />
-          <button>BTC</button>
-        </div>
-      </div>
+      <InputField
+        id="wbtc"
+        label="Send WBTC"
+        value={wbtcAmount}
+        onChange={(value) => changeAmount("WBTC", value)}
+      />
+      <InputField id="btc" label="Receive BTC" value={btcAmount} readOnly />
     </div>
   );
 };
 
-const SwapComponentBottom: React.FC<{
-  wbtcAmount: string | null;
-  btcAmount: string | null;
+type InputFieldProps = {
+  id: string;
+  label: string;
+  value: string | null;
+  readOnly?: boolean;
+  onChange?: (value: string) => void;
+};
+
+const InputField: React.FC<InputFieldProps> = ({
+  id,
+  label,
+  value,
+  readOnly,
+  onChange,
+}) => (
+  <div>
+    <label htmlFor={id}>{label}</label>
+    <div className="input-component">
+      <input
+        id={id}
+        placeholder="0"
+        value={value ? value : ""}
+        type="number"
+        readOnly={readOnly}
+        onChange={(e) => onChange && onChange(e.target.value)}
+      />
+      <button>{id.toUpperCase()}</button>
+    </div>
+  </div>
+);
+
+type SwapAndAddressComponentProps = {
+  amount: AmountState;
   changeAmount: (of: "WBTC" | "BTC", value: string) => void;
-}> = ({ wbtcAmount, btcAmount, changeAmount }) => {
-  const garden = useGardenStore();
+};
+
+const SwapAndAddressComponent: React.FC<SwapAndAddressComponentProps> = ({
+  amount,
+  changeAmount,
+}) => {
+  const garden = useGarden();
   const [btcAddress, setBtcAddress] = useState<string>();
   const { metaMaskIsConnected } = useMetaMaskStore();
+  const { wbtcAmount, btcAmount } = amount;
 
   const handleSwap = async () => {
-    if (!garden) return;
     if (
+      !garden ||
       typeof Number(wbtcAmount) !== "number" ||
       typeof Number(btcAmount) !== "number"
     )
       return;
+
     const sendAmount = Number(wbtcAmount) * 1e8;
     const recieveAmount = Number(btcAmount) * 1e8;
 
-    setBtcAddress(() => {
-      changeAmount("WBTC", "");
-      return "";
-    });
+    setBtcAddress("");
+    changeAmount("WBTC", "");
 
     await garden.swap(
       Assets.ethereum_sepolia.WBTC,

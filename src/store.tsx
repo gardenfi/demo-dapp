@@ -50,8 +50,9 @@ const gardenStore = create<GardenStore>((set) => ({
   },
 }));
 
-const useGardenStore = () => gardenStore((state) => state.garden);
+const useGarden = () => gardenStore((state) => state.garden);
 
+/* Only to be used once at the root level*/
 const useGardenSetup = () => {
   const evmProvider = useMetaMaskStore((state) => state.evmProvider);
   const setGarden = gardenStore((state) => state.setGarden);
@@ -85,6 +86,6 @@ const useGardenSetup = () => {
 
 export {
   useMetaMaskStore,
-  useGardenStore,
+  useGarden,
   useGardenSetup,
 };
