@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMetaMaskStore, useGarden, useGardenSetup } from "./store";
+import { useMetaMaskStore, useGarden } from "./store";
 import { Assets } from "@gardenfi/orderbook";
 
 type AmountState = {
@@ -8,7 +8,6 @@ type AmountState = {
 };
 
 const SwapComponent: React.FC = () => {
-  useGardenSetup();
   const [amount, setAmount] = useState<AmountState>({
     btcAmount: null,
     wbtcAmount: null,
