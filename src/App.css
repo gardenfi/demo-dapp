@@ -5,6 +5,7 @@
   --secondary-radius: 5px;
   --placeholder-color: #9a9a9d;
   --border-color: #27272a;
+  --light-text-color: #a1a1aa;
   --font-size: 14px;
 
   font-family: "Inter", sans-serif;
@@ -84,7 +85,6 @@ label {
   display: flex;
   justify-content: center;
   gap: 4.6rem;
-  /* border: 1px solid var(--border-color); */
 }
 
 /* ------------ Container End ------------ */
@@ -168,7 +168,6 @@ hr {
 
 .transaction-component {
   background-color: var(--primary-color);
-  /* border: 1px solid var(--border-color); */
   border-radius: var(--primary-radius);
   min-width: 30%;
   display: flex;
@@ -181,7 +180,6 @@ hr {
   background-color: var(--primary-color);
   border: 1px solid var(--border-color);
   border-radius: var(--primary-radius);
-  /* padding: 17px 20px 0px 20px; */
   padding-top: 17px;
   width: 100%;
   display: flex;
@@ -191,7 +189,6 @@ hr {
 
 .order-id {
   padding-left: 1rem;
-  /* border: 1px solid red; */
   font-size: 16px;
   display: flex;
   gap: 1rem;
@@ -206,11 +203,9 @@ hr {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  /* border: 1px solid red; */
 }
 
 .amount-and-status * {
-  /* border: 1px solid red; */
   text-align: center;
 }
 
@@ -218,7 +213,7 @@ hr {
 .status-label {
   padding: 5px;
   font-size: var(--font-size);
-  color: var(--border-color);
+  color: var(--light-text-color);
 }
 
 .amount-label {
@@ -274,9 +269,21 @@ hr {
   border-radius: var(--primary-radius);
   display: flex;
   flex-direction: column;
-  padding: 15px 20px;
+  padding: 20px 30px;
   background-color: var(--primary-color);
-  gap: 0.5rem;
+  gap: 1.6rem;
+}
+
+.pop-up > span {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.pop-up-label{
+    color: var(--light-text-color);
+    font-size: 1rem;
 }
 
 /* ------------ Transaction Component End ------------ */

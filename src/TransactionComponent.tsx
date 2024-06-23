@@ -94,6 +94,21 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
     (orderStatus === 1 || orderStatus === 6) &&
     Math.floor(timePassedSinceCreation / 1000) / 60 > 3;
 
+  let decoratedStatus = isOrderExpired ? "Order expired" : "";
+
+  if (!decoratedStatus) {
+    switch (orderStatus) {
+      case 3:
+        decoratedStatus = "Success";
+        break;
+      case 4:
+        decoratedStatus = "Refunded";
+        break;
+      default:
+        decoratedStatus = userFriendlyStatus;
+    }
+  }
+
   return (
     <div className="order">
       <div className="order-id">
@@ -116,15 +131,11 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
         <div className="amount">{btcAmount}</div>
         <div className="status">
           {isButton ? (
-            <button className="button-white" onClick={handleClick}></button>
+            <button className="button-white" onClick={handleClick}>
+              {decoratedStatus}
+            </button>
           ) : (
-            <span>
-              {isOrderExpired
-                ? "Order expired"
-                : orderStatus === 3
-                ? "Completed"
-                : userFriendlyStatus}
-            </span>
+            <span>{decoratedStatus}</span>
           )}
         </div>
       </div>
@@ -152,6 +163,26 @@ function getUserFriendlyStatus(status: string) {
   }
 }
 
+function getFormattedDate(CreatedAt: string): string {
+  const date = new Date(CreatedAt);
+
+  const formattedDate = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+
+  const formattedTime = date
+    .toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+    .replace(":", " : ");
+
+  return `${formattedDate} | ${formattedTime}`;
+}
+
 type PopUp = {
   order: OrderbookOrder;
   toggleModelVisible: () => void;
@@ -161,17 +192,57 @@ const OrderPopUp: React.FC<PopUp> = ({ order, toggleModelVisible }) => {
   const {
     ID,
     maker: from,
-    followerAtomicSwap: { redeemerAddress: to },
+    followerAtomicSwap: { redeemerAddress: to, amount: toAmount, refundTxHash },
     CreatedAt,
+    initiatorAtomicSwap: { amount: fromAmount, initiateTxHash, redeemTxHash },
   } = order;
 
+  const formattedDate = getFormattedDate(CreatedAt);
   return (
     <div className="pop-up-container" onClick={toggleModelVisible}>
       <div className="pop-up" onClick={(e) => e.stopPropagation()}>
-        <span>ID: {ID}</span>
-        <span>Created At: {CreatedAt}</span>
-        <span>From: {from}</span>
-        <span>To: {to}</span>
+        <span>
+          <span className="pop-up-label">ID</span>
+          <span className="pop-up-value">{ID}</span>
+        </span>
+        <span>
+          <span className="pop-up-label">Created At</span>
+          <span className="pop-up-value">{formattedDate}</span>
+        </span>
+        <span>
+          <span className="pop-up-label">From</span>
+          <span className="pop-up-value">{from}</span>
+        </span>
+        <span>
+          <span className="pop-up-label">To</span>
+          <span className="pop-up-value">{to}</span>
+        </span>
+        <span>
+          <span className="pop-up-label">WBTC</span>
+          <span className="pop-up-value">{Number(fromAmount) / 1e8}</span>
+        </span>
+        <span>
+          <span className="pop-up-label">BTC</span>
+          <span className="pop-up-value">{Number(toAmount) / 1e8}</span>
+        </span>
+        {initiateTxHash && (
+          <span>
+            <span className="pop-up-label">Initiate txHash</span>
+            <span className="pop-up-value">{initiateTxHash}</span>
+          </span>
+        )}
+        {redeemTxHash && (
+          <span>
+            <span className="pop-up-label">Redeem txHash</span>
+            <span className="pop-up-value">{redeemTxHash}</span>
+          </span>
+        )}
+        {refundTxHash && (
+          <span>
+            <span className="pop-up-label">Refund txHash</span>
+            <span className="pop-up-value">{refundTxHash}</span>
+          </span>
+        )}
       </div>
     </div>
   );
