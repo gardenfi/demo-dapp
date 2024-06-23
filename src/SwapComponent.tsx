@@ -30,16 +30,16 @@ const SwapComponent: React.FC = () => {
 
   return (
     <div className="swap-component">
-      <WalletConnectionComponent />
+      <WalletConnect />
       <hr></hr>
-      <TransactionAmountComponent amount={amount} changeAmount={changeAmount} />
+      <SwapAmount amount={amount} changeAmount={changeAmount} />
       <hr></hr>
-      <SwapAndAddressComponent amount={amount} changeAmount={changeAmount} />
+      <SwapAndAddress amount={amount} changeAmount={changeAmount} />
     </div>
   );
 };
 
-const WalletConnectionComponent: React.FC = () => {
+const WalletConnect: React.FC = () => {
   const { connectMetaMask, metaMaskIsConnected } = useMetaMaskStore();
 
   return (
@@ -79,7 +79,7 @@ type TransactionAmountComponentProps = {
   changeAmount: (of: "WBTC" | "BTC", value: string) => void;
 };
 
-const TransactionAmountComponent: React.FC<TransactionAmountComponentProps> = ({
+const SwapAmount: React.FC<TransactionAmountComponentProps> = ({
   amount,
   changeAmount,
 }) => {
@@ -134,7 +134,7 @@ type SwapAndAddressComponentProps = {
   changeAmount: (of: "WBTC" | "BTC", value: string) => void;
 };
 
-const SwapAndAddressComponent: React.FC<SwapAndAddressComponentProps> = ({
+const SwapAndAddress: React.FC<SwapAndAddressComponentProps> = ({
   amount,
   changeAmount,
 }) => {
