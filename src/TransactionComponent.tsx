@@ -6,6 +6,8 @@ import {
 import { useEffect, useState } from "react";
 import { useGardenStore, useMetaMaskStore } from "./store.tsx";
 import { formatUnits } from "ethers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 
 function TransactionsComponent() {
   const garden = useGardenStore();
@@ -32,7 +34,7 @@ function TransactionsComponent() {
     })();
   }, [garden]);
 
-  if(!orders.size) return;
+  if (!orders.size) return;
 
   return (
     <div className="transaction-component">
@@ -40,33 +42,28 @@ function TransactionsComponent() {
         .reverse()
         .slice(0, 3)
         .map((order) => (
-          <OrderComponent
-            orderId={order.ID}
-            wbtcAmount={formatUnits(order.initiatorAtomicSwap.amount, 8)}
-            btcAmount={formatUnits(order.followerAtomicSwap.amount, 8)}
-            status={parseStatus(order)}
-          />
+          <OrderComponent order={order} key={order.ID} />
         ))}
     </div>
   );
 }
 
 type Order = {
-  orderId: number;
-  wbtcAmount: string;
-  btcAmount: string;
-  status: Actions;
+  order: OrderbookOrder;
 };
 
-const OrderComponent: React.FC<Order> = ({
-  orderId,
-  wbtcAmount,
-  btcAmount,
-  status,
-}) => {
+const OrderComponent: React.FC<Order> = ({ order }) => {
+  const orderId = order.ID;
+  const wbtcAmount = formatUnits(order.initiatorAtomicSwap.amount, 8);
+  const btcAmount = formatUnits(order.followerAtomicSwap.amount, 8);
+  const status = parseStatus(order);
+  const [modelIsVisible, setModelIsVisible] = useState(false);
+
   const buttonOrSpan = (status: string): "button" | "span" => {
     switch (status) {
-      case "somthing":
+      case Actions.UserCanInitiate:
+      case Actions.UserCanRedeem:
+      case Actions.UserCanRefund:
         return "button";
       default:
         return "span";
@@ -75,17 +72,53 @@ const OrderComponent: React.FC<Order> = ({
 
   const getUserFriendlyStatus = (status: string) => {
     switch (status) {
-      case "no action can be performed":
-        return "Matching Order";
+      case Actions.NoAction:
+        return "Working";
+      case Actions.UserCanInitiate:
+        return "Initiate";
+      case Actions.UserCanRedeem:
+        return "Redeem";
+      case Actions.UserCanRefund:
+        return "Refund";
+      case Actions.CounterpartyCanInitiate:
+        return "Awaiting counterparty deposite";
       default:
-        return status;
+        return status.slice(0, 1).toUpperCase() + status.slice(1);
     }
   };
+
+  const garden = useGardenStore();
+  const handleClick = async () => {
+    if (!garden) return;
+    const swapper = garden.getSwap(order);
+    // if it is UserCanInitiate, this step will lock the funds in the contract.
+    // if it is UserCanRedeem, this step will unlocks the funds from the contract.
+    const performedAction = await swapper.next();
+    console.log(
+      `Completed Action ${performedAction.action} with transaction hash: ${performedAction.output}`
+    );
+  };
+
+  const toggleModelVisible = () => {
+    setModelIsVisible((preIsVisible) => !preIsVisible);
+  };
+
+  const orderCreatedAt = new Date(order.CreatedAt).getTime();
+  const timePassedSinceCreation = new Date().getTime() - orderCreatedAt;
 
   return (
     <div className="order">
       <div className="order-id">
-        Order Id <span>{orderId}</span>
+        <div>
+          Order Id <span>{orderId}</span>
+        </div>
+        <span className="enlarge">
+          <FontAwesomeIcon
+            icon={faUpRightAndDownLeftFromCenter}
+            style={{ color: "#27272a" }}
+            onClick={toggleModelVisible}
+          />
+        </span>
       </div>
       <div className="amount-and-status">
         <div className="amount-label">WBTC</div>
@@ -94,14 +127,47 @@ const OrderComponent: React.FC<Order> = ({
         <div className="amount">{wbtcAmount}</div>
         <div className="amount">{btcAmount}</div>
         <div className="status">
-          {buttonOrSpan(status) === "span" ? (
-            <button className="button-white">
-              {getUserFriendlyStatus(status)}
-            </button>
+          {buttonOrSpan(status) === "button" ? (
+            <button className="button-white" onClick={handleClick}></button>
           ) : (
-            <span>{getUserFriendlyStatus(status)}</span>
+            <span>
+              {(order.status === 1 || order.status === 6) &&
+              Math.floor(timePassedSinceCreation / 1000) / 60 > 3
+                ? "Order expired"
+                : order.status === 3
+                ? "Completed"
+                : getUserFriendlyStatus(status)}
+            </span>
           )}
         </div>
+      </div>
+      {modelIsVisible && (
+        <OrderPopUp order={order} toggleModelVisible={toggleModelVisible} />
+      )}
+    </div>
+  );
+};
+
+type PopUp = {
+  order: OrderbookOrder;
+  toggleModelVisible: () => void;
+};
+
+const OrderPopUp: React.FC<PopUp> = ({ order, toggleModelVisible }) => {
+  const {
+    ID,
+    maker: from,
+    followerAtomicSwap: { redeemerAddress: to },
+    CreatedAt,
+  } = order;
+
+  return (
+    <div className="pop-up-container" onClick={toggleModelVisible}>
+      <div className="pop-up" onClick={(e) => e.stopPropagation()}>
+        <span>ID: {ID}</span>
+        <span>Created At: {CreatedAt}</span>
+        <span>From: {from}</span>
+        <span>To: {to}</span>
       </div>
     </div>
   );

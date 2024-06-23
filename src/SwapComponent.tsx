@@ -9,13 +9,43 @@ const SwapComponent: React.FC = () => {
     wbtcAmount: string | null;
   }>({ btcAmount: null, wbtcAmount: null });
 
+  const { wbtcAmount, btcAmount } = amount;
+
+  const changeAmount = (of: "WBTC" | "BTC", value: string) => {
+    if (of === "WBTC") {
+      if (Number(value) <= 0) {
+        setAmount(() => ({
+          wbtcAmount: value,
+          btcAmount: null,
+        }));
+        return;
+      }
+
+      const btcAmount = (1 - 0.3 / 100) * Number(value);
+      setAmount(() => ({
+        wbtcAmount: value,
+        btcAmount: btcAmount.toString(),
+      }));
+    }
+  };
+
   return (
     <div className="swap-component">
       <SwapComponentTop />
       <hr></hr>
-      <SwapComponentMiddle amount={amount} setAmount={setAmount} />
+      <SwapComponentMiddle
+        amount={amount}
+        setAmount={setAmount}
+        wbtcAmount={wbtcAmount}
+        btcAmount={btcAmount}
+        changeAmount={changeAmount}
+      />
       <hr></hr>
-      <SwapComponentBottom amount={amount} />
+      <SwapComponentBottom
+        wbtcAmount={wbtcAmount}
+        btcAmount={btcAmount}
+        changeAmount={changeAmount}
+      />
     </div>
   );
 };
@@ -39,33 +69,16 @@ const SwapComponentTop: React.FC = () => {
 
 const SwapComponentMiddle: React.FC<{
   amount: { wbtcAmount: string | null; btcAmount: string | null };
+  changeAmount: (of: "WBTC" | "BTC", value: string) => void;
+  wbtcAmount: string | null;
+  btcAmount: string | null;
   setAmount: React.Dispatch<
     React.SetStateAction<{
       btcAmount: string | null;
       wbtcAmount: string | null;
     }>
   >;
-}> = ({ amount, setAmount }) => {
-  const { wbtcAmount, btcAmount } = amount;
-
-  const changeAmount = (of: "WBTC" | "BTC", value: string) => {
-    if (of === "WBTC") {
-      if (Number(value) <= 0) {
-        setAmount(() => ({
-          wbtcAmount: value,
-          btcAmount: null,
-        }));
-        return;
-      }
-
-      const btcAmount = (1 - 0.3 / 100) * Number(value);
-      setAmount(() => ({
-        wbtcAmount: value,
-        btcAmount: btcAmount.toString(),
-      }));
-    }
-  };
-
+}> = ({ wbtcAmount, btcAmount, changeAmount }) => {
   return (
     <div className="swap-component-middle-section">
       <div>
@@ -99,12 +112,13 @@ const SwapComponentMiddle: React.FC<{
 };
 
 const SwapComponentBottom: React.FC<{
-  amount: { wbtcAmount: string | null; btcAmount: string | null };
-}> = ({ amount }) => {
+  wbtcAmount: string | null;
+  btcAmount: string | null;
+  changeAmount: (of: "WBTC" | "BTC", value: string) => void;
+}> = ({ wbtcAmount, btcAmount, changeAmount }) => {
   const garden = useGardenStore();
   const [btcAddress, setBtcAddress] = useState<string>();
-  const { wbtcAmount, btcAmount } = amount;
-  const { connectMetaMask, metaMaskIsConnected } = useMetaMaskStore();
+  const { metaMaskIsConnected } = useMetaMaskStore();
 
   const handleSwap = async () => {
     if (!garden) return;
@@ -115,6 +129,11 @@ const SwapComponentBottom: React.FC<{
       return;
     const sendAmount = Number(wbtcAmount) * 1e8;
     const recieveAmount = Number(btcAmount) * 1e8;
+
+    setBtcAddress(() => {
+      changeAmount("WBTC", "");
+      return "";
+    });
 
     await garden.swap(
       Assets.ethereum_sepolia.WBTC,

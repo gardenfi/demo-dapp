@@ -193,6 +193,13 @@ hr {
   padding-left: 1rem;
   /* border: 1px solid red; */
   font-size: 16px;
+  display: flex;
+  gap: 1rem;
+}
+
+.order-id .enlarge svg {
+  height: 1rem;
+  cursor: pointer;
 }
 
 .amount-and-status {
@@ -203,48 +210,73 @@ hr {
 }
 
 .amount-and-status * {
-    /* border: 1px solid red; */
-    text-align: center;
+  /* border: 1px solid red; */
+  text-align: center;
 }
 
-
-.amount-label, .status-label {
-    padding: 5px;
-    font-size: var(--font-size);
-    color: var(--border-color); 
+.amount-label,
+.status-label {
+  padding: 5px;
+  font-size: var(--font-size);
+  color: var(--border-color);
 }
 
 .amount-label {
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
 }
 
-.status-label{
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+.status-label {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .amount {
-    font-size: 20px;
-    align-self: stretch;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-right: 1px solid var(--border-color);
+  font-size: 20px;
+  align-self: stretch;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid var(--border-color);
 }
 
 .status {
-    font-size: 14px;
-    padding: 9px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  max-width: 125px;
+  font-size: 14px;
+  padding: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .status button {
-    padding: 5px 10px;
-    border-radius: 4px;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.pop-up-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #09090Baa;
+}
+
+.pop-up {
+  border: 1px solid var(--border-color);
+  border-radius: var(--primary-radius);
+  display: flex;
+  flex-direction: column;
+  padding: 15px 20px;
+  background-color: var(--primary-color);
+  gap: 0.5rem;
 }
 
 /* ------------ Transaction Component End ------------ */
