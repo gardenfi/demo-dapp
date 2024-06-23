@@ -34,7 +34,7 @@ const SwapComponent: React.FC = () => {
       <hr></hr>
       <SwapAmount amount={amount} changeAmount={changeAmount} />
       <hr></hr>
-      <SwapAndAddress amount={amount} changeAmount={changeAmount} />
+      <Swap amount={amount} changeAmount={changeAmount} />
     </div>
   );
 };
@@ -134,7 +134,7 @@ type SwapAndAddressComponentProps = {
   changeAmount: (of: "WBTC" | "BTC", value: string) => void;
 };
 
-const SwapAndAddress: React.FC<SwapAndAddressComponentProps> = ({
+const Swap: React.FC<SwapAndAddressComponentProps> = ({
   amount,
   changeAmount,
 }) => {

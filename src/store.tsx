@@ -3,7 +3,6 @@ import { create } from "zustand";
 import { EVMWallet } from "@catalogfi/wallets";
 import { BrowserProvider } from "ethers";
 import { GardenJS } from "@gardenfi/core";
-import { Assets, Actions, parseStatus } from "@gardenfi/orderbook";
 import { Orderbook, Chains } from "@gardenfi/orderbook";
 import {
   BitcoinNetwork,
