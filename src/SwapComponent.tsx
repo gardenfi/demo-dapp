@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMetaMaskStore, useGarden } from "./store";
 import { Assets } from "@gardenfi/orderbook";
 
@@ -19,10 +19,10 @@ const SwapComponent: React.FC = () => {
     }
   };
   const handleWBTCChange = (value: string) => {
-    let newAmount: AmountState = { wbtcAmount: value, btcAmount: null };
+    const newAmount: AmountState = { wbtcAmount: value, btcAmount: null };
     if (Number(value) > 0) {
       const btcAmount = (1 - 0.3 / 100) * Number(value);
-      newAmount.btcAmount = btcAmount.toString();
+      newAmount.btcAmount = btcAmount.toFixed(8).toString();
     }
     setAmount(newAmount);
   };
@@ -137,10 +137,19 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({
   amount,
   changeAmount,
 }) => {
-  const garden = useGarden();
+  const { garden, bitcoin } = useGarden();
   const [btcAddress, setBtcAddress] = useState<string>();
   const { metaMaskIsConnected } = useMetaMaskStore();
   const { wbtcAmount, btcAmount } = amount;
+
+  useEffect(() => {
+    if (!bitcoin) return;
+    const getAddress = async () => {
+      const address = await bitcoin.getAddress();
+      setBtcAddress(address);
+    };
+    getAddress();
+  }, [bitcoin]);
 
   const handleSwap = async () => {
     if (
@@ -153,12 +162,11 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({
     const sendAmount = Number(wbtcAmount) * 1e8;
     const recieveAmount = Number(btcAmount) * 1e8;
 
-    setBtcAddress("");
     changeAmount("WBTC", "");
 
     await garden.swap(
-      Assets.ethereum_sepolia.WBTC,
-      Assets.bitcoin_testnet.BTC,
+      Assets.ethereum_localnet.WBTC,
+      Assets.bitcoin_regtest.BTC,
       sendAmount,
       recieveAmount
     );
@@ -167,13 +175,12 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({
   return (
     <div className="swap-component-bottom-section">
       <div>
-        <label htmlFor="receive-address">Receive address</label>
+        <label htmlFor="receive-address">Receive address</label>
         <div className="input-component">
           <input
             id="receive-address"
             placeholder="Enter BTC Address"
             value={btcAddress ? btcAddress : ""}
-            onChange={(e) => setBtcAddress(e.target.value)}
           />
         </div>
       </div>

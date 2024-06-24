@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 
 function TransactionsComponent() {
-  const garden = useGarden();
+  const { garden } = useGarden();
   const { evmProvider } = useMetaMaskStore();
   const [orders, setOrders] = useState(new Map<number, OrderbookOrder>());
 
@@ -57,6 +57,9 @@ type Order = {
 };
 
 const OrderComponent: React.FC<Order> = ({ order }) => {
+  const { garden } = useGarden();
+  const [modelIsVisible, setModelIsVisible] = useState(false);
+
   const {
     ID: orderId,
     initiatorAtomicSwap,
@@ -67,7 +70,6 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
   const parsedStatus = parseStatus(order);
   const wbtcAmount = formatUnits(initiatorAtomicSwap.amount, 8);
   const btcAmount = formatUnits(followerAtomicSwap.amount, 8);
-  const [modelIsVisible, setModelIsVisible] = useState(false);
 
   const isButton = [
     Actions.UserCanInitiate,
@@ -76,7 +78,6 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
   ].includes(parsedStatus);
   const userFriendlyStatus = getUserFriendlyStatus(parsedStatus);
 
-  const garden = useGarden();
   const handleClick = async () => {
     if (!garden) return;
     const swapper = garden.getSwap(order);
@@ -149,7 +150,7 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
 function getUserFriendlyStatus(status: string) {
   switch (status) {
     case Actions.NoAction:
-      return "Working";
+      return "Processing";
     case Actions.UserCanInitiate:
       return "Initiate";
     case Actions.UserCanRedeem:
