@@ -19,10 +19,10 @@ const SwapComponent: React.FC = () => {
     }
   };
   const handleWBTCChange = (value: string) => {
-    let newAmount: AmountState = { wbtcAmount: value, btcAmount: null };
+    const newAmount: AmountState = { wbtcAmount: value, btcAmount: null };
     if (Number(value) > 0) {
       const btcAmount = (1 - 0.3 / 100) * Number(value);
-      newAmount.btcAmount = btcAmount.toString();
+      newAmount.btcAmount = btcAmount.toFixed(8).toString();
     }
     setAmount(newAmount);
   };
@@ -167,7 +167,7 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({
   return (
     <div className="swap-component-bottom-section">
       <div>
-        <label htmlFor="receive-address">Receive address</label>
+        <label htmlFor="receive-address">Receive address</label>
         <div className="input-component">
           <input
             id="receive-address"
