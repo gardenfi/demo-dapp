@@ -66,6 +66,7 @@ const useGardenSetup = () => {
         url: "https://stg-test-orderbook.onrender.com/",
         signer: signer,
         opts: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           domain: (window as any).location.host,
           store: localStorage,
         },
@@ -80,11 +81,7 @@ const useGardenSetup = () => {
 
       setGarden(garden);
     })();
-  }, [evmProvider]);
+  }, [evmProvider, setGarden]);
 };
 
-export {
-  useMetaMaskStore,
-  useGarden,
-  useGardenSetup,
-};
+export { useMetaMaskStore, useGarden, useGardenSetup };
