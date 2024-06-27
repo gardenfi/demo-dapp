@@ -74,7 +74,7 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
     Actions.UserCanRedeem,
     Actions.UserCanRefund,
   ].includes(parsedStatus);
-  const userFriendlyStatus = getUserFriendlyStatus(parsedStatus);
+  const userFriendlyStatus = getUserFriendlyStatus(parsedStatus, order.ID);
 
   const garden = useGarden();
   const handleClick = async () => {
@@ -96,6 +96,8 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
 
   let decoratedStatus = isOrderExpired ? "Order expired" : "";
 
+  console.log("ID", order.ID, "Status", orderStatus);
+
   if (!decoratedStatus) {
     switch (orderStatus) {
       case 3:
@@ -106,6 +108,13 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
         break;
       default:
         decoratedStatus = userFriendlyStatus;
+    }
+
+    if (
+      initiatorAtomicSwap.swapStatus === 4 ||
+      initiatorAtomicSwap.swapStatus === 6
+    ) {
+      decoratedStatus = "Success";
     }
   }
 
@@ -157,10 +166,10 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
   );
 };
 
-function getUserFriendlyStatus(status: string) {
+function getUserFriendlyStatus(status: string, ID: number) {
   switch (status) {
     case Actions.NoAction:
-      return "Working";
+      return "Processing";
     case Actions.UserCanInitiate:
       return "Initiate";
     case Actions.UserCanRedeem:
@@ -169,8 +178,13 @@ function getUserFriendlyStatus(status: string) {
       return "Refund";
     case Actions.CounterpartyCanInitiate:
       return "Awaiting counterparty deposite";
-    default:
-      return status.slice(0, 1).toUpperCase() + status.slice(1);
+    default: {
+      console.log(
+        `Actual Status for ${ID} `,
+        status.slice(0, 1).toUpperCase() + status.slice(1)
+      );
+      return "Processing";
+    }
   }
 }
 
@@ -209,13 +223,14 @@ const OrderPopUp: React.FC<PopUp> = ({
 }) => {
   const {
     ID,
-    followerAtomicSwap: { redeemerAddress: to, amount: toAmount, refundTxHash },
+    followerAtomicSwap: { redeemerAddress: to, amount: toAmount},
     CreatedAt,
     initiatorAtomicSwap: {
       initiatorAddress: from,
       amount: fromAmount,
       initiateTxHash,
       redeemTxHash,
+      refundTxHash
     },
   } = order;
 

@@ -119,7 +119,7 @@ label {
 
 hr {
   width: 100%;
-  color: var(--border-color);
+  border-color: var(--border-color);
   margin-top: 1.125rem;
   margin-bottom: 1.125rem;
 }
