@@ -109,6 +109,12 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
     }
   }
 
+  const txFromBtcToWBTC =
+    order.userBtcWalletAddress === order.initiatorAtomicSwap.initiatorAddress;
+
+  const fromLabel = txFromBtcToWBTC ? "BTC" : "WBTC";
+  const toLabel = txFromBtcToWBTC ? "WBTC" : "BTC";
+
   return (
     <div className="order">
       <div className="order-id">
@@ -124,8 +130,8 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
         </span>
       </div>
       <div className="amount-and-status">
-        <div className="amount-label">WBTC</div>
-        <div className="amount-label">BTC</div>
+        <div className="amount-label">{fromLabel}</div>
+        <div className="amount-label">{toLabel}</div>
         <div className="status-label">Status</div>
         <div className="amount">{wbtcAmount}</div>
         <div className="amount">{btcAmount}</div>
@@ -140,7 +146,12 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
         </div>
       </div>
       {modelIsVisible && (
-        <OrderPopUp order={order} toggleModelVisible={toggleModelVisible} />
+        <OrderPopUp
+          order={order}
+          toggleModelVisible={toggleModelVisible}
+          fromLabel={fromLabel}
+          toLabel={toLabel}
+        />
       )}
     </div>
   );
@@ -186,18 +197,30 @@ function getFormattedDate(CreatedAt: string): string {
 type PopUp = {
   order: OrderbookOrder;
   toggleModelVisible: () => void;
+  fromLabel: string;
+  toLabel: string;
 };
 
-const OrderPopUp: React.FC<PopUp> = ({ order, toggleModelVisible }) => {
+const OrderPopUp: React.FC<PopUp> = ({
+  order,
+  toggleModelVisible,
+  fromLabel,
+  toLabel,
+}) => {
   const {
     ID,
-    maker: from,
     followerAtomicSwap: { redeemerAddress: to, amount: toAmount, refundTxHash },
     CreatedAt,
-    initiatorAtomicSwap: { amount: fromAmount, initiateTxHash, redeemTxHash },
+    initiatorAtomicSwap: {
+      initiatorAddress: from,
+      amount: fromAmount,
+      initiateTxHash,
+      redeemTxHash,
+    },
   } = order;
 
   const formattedDate = getFormattedDate(CreatedAt);
+
   return (
     <div className="pop-up-container" onClick={toggleModelVisible}>
       <div className="pop-up" onClick={(e) => e.stopPropagation()}>
@@ -218,11 +241,11 @@ const OrderPopUp: React.FC<PopUp> = ({ order, toggleModelVisible }) => {
           <span className="pop-up-value">{to}</span>
         </span>
         <span>
-          <span className="pop-up-label">WBTC</span>
+          <span className="pop-up-label">{fromLabel}</span>
           <span className="pop-up-value">{Number(fromAmount) / 1e8}</span>
         </span>
         <span>
-          <span className="pop-up-label">BTC</span>
+          <span className="pop-up-label">{toLabel}</span>
           <span className="pop-up-value">{Number(toAmount) / 1e8}</span>
         </span>
         {initiateTxHash && (

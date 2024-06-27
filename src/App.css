@@ -234,6 +234,8 @@ hr {
   justify-content: center;
   align-items: center;
   border-right: 1px solid var(--border-color);
+  padding-left: 9px;
+  padding-right: 9px;
 }
 
 .status {
