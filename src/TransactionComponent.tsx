@@ -76,6 +76,9 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
   ].includes(parsedStatus);
   const userFriendlyStatus = getUserFriendlyStatus(parsedStatus, order.ID);
 
+  const [isButtonEnabled, setIsButtonEnabled] = useState(true);
+  const [previousStatus, setPreviousStatus] = useState("");
+
   const garden = useGarden();
   const handleClick = async () => {
     if (!garden) return;
@@ -84,6 +87,7 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
     console.log(
       `Completed Action ${performedAction.action} with transaction hash: ${performedAction.output}`
     );
+    setIsButtonEnabled(false);
   };
 
   const toggleModelVisible = () => setModelIsVisible((pre) => !pre);
@@ -118,6 +122,11 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
     }
   }
 
+  if(previousStatus !== decoratedStatus){
+      setIsButtonEnabled(true);
+      setPreviousStatus(decoratedStatus);
+  }
+
   const txFromBtcToWBTC =
     order.userBtcWalletAddress === order.initiatorAtomicSwap.initiatorAddress;
 
@@ -146,7 +155,7 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
         <div className="amount">{btcAmount}</div>
         <div className="status">
           {isButton ? (
-            <button className="button-white" onClick={handleClick}>
+            <button className="button-white" onClick={handleClick} disabled={!isButtonEnabled}>
               {decoratedStatus}
             </button>
           ) : (
