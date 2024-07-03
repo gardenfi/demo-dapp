@@ -1,4 +1,4 @@
-# Swapper Frontend
+# Demo App
 
 This project demonstrates how to use the [Garden SDK](https://docs.garden.finance/developers/sdk/) to create a simple dApp for swapping from WBTC to BTC.
 
@@ -14,8 +14,8 @@ This project demonstrates how to use the [Garden SDK](https://docs.garden.financ
 1. Clone the repository
 
 ```bash
-git clone https://github.com/gardenfi/swapper-frontend
-cd swapper-frontend
+git clone https://github.com/gardenfi/demo-app
+cd demo-app
 ```
 
 2. Install dependencies
@@ -26,10 +26,10 @@ bun install
 
 3. Run the development server
 
-```
+```bash
 bun run dev
 ```
 
 The dApp should look something like this
 
-![image](https://github.com/gardenfi/swapper-frontend/assets/162546266/1cdd1043-a699-4218-8654-8994ce6bf5ff)
+![dApp](https://github.com/gardenfi/swapper-frontend/assets/162546266/1cdd1043-a699-4218-8654-8994ce6bf5ff)
