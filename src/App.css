@@ -89,6 +89,26 @@ label {
 
 /* ------------ Container End ------------ */
 
+/* ------------ Balances Component Start ------------ */
+
+.balances {
+  display: flex;
+  position: fixed;
+  right: 3rem;
+  top: 1rem;
+  gap: 1rem;
+}
+
+.balances > * {
+  padding: 8px;
+  background-color: var(--primary-color);
+  color: var(--light-text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--secondary-radius);
+}
+
+/* ------------ Balances Component End ------------ */
+
 /* ------------ Swap Component Start ------------ */
 
 .swap-component {
@@ -263,7 +283,7 @@ hr {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #09090Baa;
+  background-color: #09090baa;
 }
 
 .pop-up {
@@ -277,15 +297,15 @@ hr {
 }
 
 .pop-up > span {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.pop-up-label{
-    color: var(--light-text-color);
-    font-size: 1rem;
+.pop-up-label {
+  color: var(--light-text-color);
+  font-size: 1rem;
 }
 
 /* ------------ Transaction Component End ------------ */

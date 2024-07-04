@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 
 function TransactionsComponent() {
-  const garden = useGarden();
+  const { garden } = useGarden();
   const { evmProvider } = useMetaMaskStore();
   const [orders, setOrders] = useState(new Map<number, OrderbookOrder>());
 
@@ -57,6 +57,9 @@ type Order = {
 };
 
 const OrderComponent: React.FC<Order> = ({ order }) => {
+  const { garden } = useGarden();
+  const [modelIsVisible, setModelIsVisible] = useState(false);
+
   const {
     ID: orderId,
     initiatorAtomicSwap,
@@ -67,7 +70,6 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
   const parsedStatus = parseStatus(order);
   const wbtcAmount = formatUnits(initiatorAtomicSwap.amount, 8);
   const btcAmount = formatUnits(followerAtomicSwap.amount, 8);
-  const [modelIsVisible, setModelIsVisible] = useState(false);
 
   const isButton = [
     Actions.UserCanInitiate,
@@ -79,7 +81,6 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
   const [isButtonEnabled, setIsButtonEnabled] = useState(true);
   const [previousStatus, setPreviousStatus] = useState("");
 
-  const garden = useGarden();
   const handleClick = async () => {
     if (!garden) return;
     const swapper = garden.getSwap(order);
@@ -122,9 +123,9 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
     }
   }
 
-  if(previousStatus !== decoratedStatus){
-      setIsButtonEnabled(true);
-      setPreviousStatus(decoratedStatus);
+  if (previousStatus !== decoratedStatus) {
+    setIsButtonEnabled(true);
+    setPreviousStatus(decoratedStatus);
   }
 
   const txFromBtcToWBTC =
@@ -155,7 +156,11 @@ const OrderComponent: React.FC<Order> = ({ order }) => {
         <div className="amount">{btcAmount}</div>
         <div className="status">
           {isButton ? (
-            <button className="button-white" onClick={handleClick} disabled={!isButtonEnabled}>
+            <button
+              className="button-white"
+              onClick={handleClick}
+              disabled={!isButtonEnabled}
+            >
               {decoratedStatus}
             </button>
           ) : (
@@ -232,14 +237,14 @@ const OrderPopUp: React.FC<PopUp> = ({
 }) => {
   const {
     ID,
-    followerAtomicSwap: { redeemerAddress: to, amount: toAmount},
+    followerAtomicSwap: { redeemerAddress: to, amount: toAmount },
     CreatedAt,
     initiatorAtomicSwap: {
       initiatorAddress: from,
       amount: fromAmount,
       initiateTxHash,
       redeemTxHash,
-      refundTxHash
+      refundTxHash,
     },
   } = order;
 
