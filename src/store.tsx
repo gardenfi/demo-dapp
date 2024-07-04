@@ -25,6 +25,23 @@ const useMetaMaskStore = create<EvmWalletState & EvmWalletAction>((set) => ({
   connectMetaMask: async () => {
     if (window.ethereum !== null) {
       const provider = new BrowserProvider(window.ethereum);
+      const network = await provider.getNetwork();
+      if (network.chainId !== 31337n) {
+        const networkConfig = {
+          chainId: "0x7A69",
+          chainName: "ethereum localnet",
+          rpcUrls: ["http://localhost:8545"],
+          nativeCurrency: {
+            name: "Ethereum",
+            symbol: "Eth",
+            decimals: 18,
+          },
+        };
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [networkConfig],
+        });
+      }
       set(() => ({
         evmProvider: provider,
         metaMaskIsConnected: true,
@@ -37,19 +54,25 @@ const useMetaMaskStore = create<EvmWalletState & EvmWalletAction>((set) => ({
 
 type GardenStore = {
   garden: GardenJS | null;
-  setGarden: (garden: GardenJS) => void;
+  bitcoin: BitcoinOTA | null;
+  setGarden: (garden: GardenJS, bitcoin: BitcoinOTA) => void;
 };
 
 const gardenStore = create<GardenStore>((set) => ({
   garden: null,
-  setGarden: (garden: GardenJS) => {
+  bitcoin: null,
+  setGarden: (garden: GardenJS, bitcoin: BitcoinOTA) => {
     set(() => ({
       garden,
+      bitcoin,
     }));
   },
 }));
 
-const useGarden = () => gardenStore((state) => state.garden);
+const useGarden = () => ({
+  garden: gardenStore((state) => state.garden),
+  bitcoin: gardenStore((state) => state.bitcoin),
+});
 
 /* Only to be used once at the root level*/
 const useGardenSetup = () => {
@@ -60,10 +83,14 @@ const useGardenSetup = () => {
     (async () => {
       if (!evmProvider) return;
       const signer = await evmProvider.getSigner();
-      const bitcoinProvider = new BitcoinProvider(BitcoinNetwork.Testnet);
+
+      const bitcoinProvider = new BitcoinProvider(
+        BitcoinNetwork.Regtest,
+        "http://localhost:30000"
+      );
 
       const orderbook = await Orderbook.init({
-        url: "https://stg-test-orderbook.onrender.com/",
+        url: "http://localhost:8080",
         signer: signer,
         opts: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,13 +100,13 @@ const useGardenSetup = () => {
       });
 
       const wallets = {
-        [Chains.bitcoin_testnet]: new BitcoinOTA(bitcoinProvider, signer),
-        [Chains.ethereum_sepolia]: new EVMWallet(signer),
+        [Chains.bitcoin_regtest]: new BitcoinOTA(bitcoinProvider, signer),
+        [Chains.ethereum_localnet]: new EVMWallet(signer),
       };
 
       const garden = new GardenJS(orderbook, wallets);
 
-      setGarden(garden);
+      setGarden(garden, wallets[Chains.bitcoin_regtest]);
     })();
   }, [evmProvider, setGarden]);
 };
