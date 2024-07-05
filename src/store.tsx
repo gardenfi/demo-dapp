@@ -33,7 +33,7 @@ const useMetaMaskStore = create<EvmWalletState & EvmWalletAction>((set) => ({
           rpcUrls: ["http://localhost:8545"],
           nativeCurrency: {
             name: "Ethereum",
-            symbol: "Eth",
+            symbol: "ETH",
             decimals: 18,
           },
         };
