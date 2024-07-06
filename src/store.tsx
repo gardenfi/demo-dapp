@@ -76,8 +76,8 @@ const useGarden = () => ({
 
 /* Only to be used once at the root level*/
 const useGardenSetup = () => {
-  const evmProvider = useMetaMaskStore((state) => state.evmProvider);
-  const setGarden = gardenStore((state) => state.setGarden);
+  const { evmProvider } = useMetaMaskStore();
+  const { setGarden } = gardenStore();
 
   useEffect(() => {
     (async () => {

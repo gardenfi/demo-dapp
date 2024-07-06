@@ -3,7 +3,7 @@ import { useGarden, useMetaMaskStore } from "./store";
 import { Contract, formatUnits } from "ethers";
 import { ERC20ABI } from "./erc20";
 
-export const Balances = () => {
+const Balances: React.FC = () => {
   const { bitcoin } = useGarden();
   const { evmProvider } = useMetaMaskStore();
   const [bitcoinBalance, setBitcoinBalance] = useState("0");
@@ -30,19 +30,13 @@ export const Balances = () => {
     const erc20 = new Contract(
       "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       ERC20ABI,
-      evmProvider,
+      evmProvider
     );
     const signer = await evmProvider.getSigner();
     const address = await signer.getAddress();
     const wbtcBalance = await erc20.balanceOf(address);
     setWBTCBalance(Number(formatUnits(+wbtcBalance.toString(), 8)).toFixed(6));
   }, [bitcoin, evmProvider, isMMPopupOpen]);
-
-  useEffect(() => {
-    const id = setInterval(() => fetchBalance(), 10000);
-
-    return () => clearInterval(id);
-  }, [fetchBalance]);
 
   useEffect(() => {
     fetchBalance();
@@ -55,3 +49,5 @@ export const Balances = () => {
     </div>
   );
 };
+
+export default Balances;
