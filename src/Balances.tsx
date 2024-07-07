@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useGarden, useMetaMaskStore } from "./store";
+import { useGarden, useMetaMaskStore, useSignStore } from "./store";
 import { Contract, formatUnits } from "ethers";
 import { ERC20ABI } from "./erc20";
 
@@ -8,35 +8,52 @@ const Balances: React.FC = () => {
   const { evmProvider } = useMetaMaskStore();
   const [bitcoinBalance, setBitcoinBalance] = useState("0");
   const [wbtcBalance, setWBTCBalance] = useState("0");
-  const [isMMPopupOpen, setIsMMPopupOpen] = useState(false);
-  const [isSigned, setIsSigned] = useState(false);
+  const { isMMPopupOpen, isSigned, setIsSigned, setIsMMPopupOpen } =
+    useSignStore();
 
   const fetchBalance = useCallback(async () => {
     if (!bitcoin || !evmProvider) return;
     if (isMMPopupOpen && !isSigned) return;
-    let balance = 0.0;
+
+    let balance = 0;
     try {
-      setIsMMPopupOpen(() => {
-        if (isSigned) return false;
-        return true;
-      });
+      if (!isSigned) setIsMMPopupOpen(true);
       balance = await bitcoin.getBalance();
       setIsSigned(true);
+      setIsMMPopupOpen(false);
+      setBitcoinBalance(Number(formatUnits(balance, 8)).toFixed(6));
+
+      const erc20 = new Contract(
+        "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        ERC20ABI,
+        evmProvider
+      );
+      const signer = await evmProvider.getSigner();
+      const address = await signer.getAddress();
+      const wbtcBalance = await erc20.balanceOf(address);
+      setWBTCBalance(Number(formatUnits(wbtcBalance, 8)).toFixed(6));
     } catch (err) {
       setIsSigned(false);
+      setIsMMPopupOpen(false);
     }
-    setIsMMPopupOpen(false);
-    setBitcoinBalance(Number(formatUnits(balance, 8)).toFixed(6));
-    const erc20 = new Contract(
-      "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      ERC20ABI,
-      evmProvider
-    );
-    const signer = await evmProvider.getSigner();
-    const address = await signer.getAddress();
-    const wbtcBalance = await erc20.balanceOf(address);
-    setWBTCBalance(Number(formatUnits(+wbtcBalance.toString(), 8)).toFixed(6));
-  }, [bitcoin, evmProvider, isMMPopupOpen]);
+  }, [
+    bitcoin,
+    evmProvider,
+    isMMPopupOpen,
+    isSigned,
+    setIsSigned,
+    setIsMMPopupOpen,
+  ]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      fetchBalance();
+    }, 10000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [fetchBalance]);
 
   useEffect(() => {
     fetchBalance();

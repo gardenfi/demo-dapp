@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMetaMaskStore, useGarden } from "./store";
+import { useMetaMaskStore, useGarden, useSignStore } from "./store";
 import { Assets } from "@gardenfi/orderbook";
 
 type AmountState = {
@@ -142,14 +142,18 @@ const Swap: React.FC<SwapAndAddressComponentProps> = ({
   const { metaMaskIsConnected } = useMetaMaskStore();
   const { wbtcAmount, btcAmount } = amount;
 
+  const { isSigned } = useSignStore();
+
   useEffect(() => {
     if (!bitcoin) return;
     const getAddress = async () => {
-      const address = await bitcoin.getAddress();
-      setBtcAddress(address);
+      if (isSigned) {
+        const address = await bitcoin.getAddress();
+        setBtcAddress(address);
+      }
     };
     getAddress();
-  }, [bitcoin]);
+  }, [bitcoin, isSigned]);
 
   const handleSwap = async () => {
     if (
