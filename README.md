@@ -66,4 +66,5 @@ bun run dev
 
 The dApp should look something like this
 
-![dApp](https://github.com/gardenfi/swapper-frontend/assets/162546266/1cdd1043-a699-4218-8654-8994ce6bf5ff)
+![final_dapp](https://github.com/Sushants-Git/demo-app/assets/100516354/bf939a2f-3ac1-40f6-882c-c779ee4928ee)
+
