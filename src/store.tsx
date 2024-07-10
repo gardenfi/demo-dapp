@@ -19,28 +19,30 @@ type EvmWalletAction = {
   connectMetaMask: () => Promise<void>;
 };
 
+const networkConfig = {
+  chainId: "0x7A69",
+  chainName: "ethereum localnet",
+  rpcUrls: ["http://localhost:8545"],
+  nativeCurrency: {
+    name: "Ethereum",
+    symbol: "ETH",
+    decimals: 18,
+  },
+};
+
 const useMetaMaskStore = create<EvmWalletState & EvmWalletAction>((set) => ({
   metaMaskIsConnected: false,
   evmProvider: null,
   connectMetaMask: async () => {
     if (window.ethereum !== null) {
-      const provider = new BrowserProvider(window.ethereum);
-      const network = await provider.getNetwork();
+      let provider = new BrowserProvider(window.ethereum);
+      let network = await provider.getNetwork();
       if (network.chainId !== 31337n) {
-        const networkConfig = {
-          chainId: "0x7A69",
-          chainName: "ethereum localnet",
-          rpcUrls: ["http://localhost:8545"],
-          nativeCurrency: {
-            name: "Ethereum",
-            symbol: "ETH",
-            decimals: 18,
-          },
-        };
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [networkConfig],
         });
+        provider = new BrowserProvider(window.ethereum);
       }
       set(() => ({
         evmProvider: provider,
@@ -69,6 +71,28 @@ const gardenStore = create<GardenStore>((set) => ({
   },
 }));
 
+type SignStore = {
+  isMMPopupOpen: boolean;
+  isSigned: boolean;
+  setIsMMPopupOpen: (isMMPopupOpen: boolean) => void;
+  setIsSigned: (isSigned: boolean) => void;
+};
+
+const useSignStore = create<SignStore>((set) => ({
+  isMMPopupOpen: false,
+  isSigned: false,
+  setIsMMPopupOpen: (isMMPopupOpen: boolean) => {
+    set(() => {
+      return { isMMPopupOpen };
+    });
+  },
+  setIsSigned: (isSigned: boolean) => {
+    set(() => {
+      return { isSigned };
+    });
+  },
+}));
+
 const useGarden = () => ({
   garden: gardenStore((state) => state.garden),
   bitcoin: gardenStore((state) => state.bitcoin),
@@ -76,8 +100,8 @@ const useGarden = () => ({
 
 /* Only to be used once at the root level*/
 const useGardenSetup = () => {
-  const evmProvider = useMetaMaskStore((state) => state.evmProvider);
-  const setGarden = gardenStore((state) => state.setGarden);
+  const { evmProvider } = useMetaMaskStore();
+  const { setGarden } = gardenStore();
 
   useEffect(() => {
     (async () => {
@@ -111,4 +135,4 @@ const useGardenSetup = () => {
   }, [evmProvider, setGarden]);
 };
 
-export { useMetaMaskStore, useGarden, useGardenSetup };
+export { useMetaMaskStore, useGarden, useGardenSetup, useSignStore };

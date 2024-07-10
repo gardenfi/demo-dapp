@@ -26,7 +26,7 @@ function TransactionsComponent() {
       garden.subscribeOrders(evmAddress, (updatedOrders) => {
         setOrders((prevOrders) => {
           const updatedOrdersMap = new Map(prevOrders);
-          updatedOrders.forEach((order) =>
+          updatedOrders?.forEach((order) =>
             updatedOrdersMap.set(order.ID, order)
           );
           return updatedOrdersMap;

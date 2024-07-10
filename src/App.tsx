@@ -1,6 +1,6 @@
 import SwapComponent from "./SwapComponent";
 import TransactionsComponent from "./TransactionComponent";
-import { Balances } from "./Balances";
+import Balances from "./Balances";
 import { useGardenSetup } from "./store";
 import "./App.css";
 
